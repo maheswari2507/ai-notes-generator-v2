@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Notes Generator</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 48px 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 460px;
+            text-align: center;
+        }
+
+        .logo {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 16px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            color: #1a1a2e;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 0.92rem;
+            margin-bottom: 36px;
+            line-height: 1.5;
+        }
+
+        /* Upload box */
+        .upload-area {
+            border: 2px dashed #d0d5f5;
+            border-radius: 14px;
+            padding: 36px 20px;
+            background: #f8f9ff;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 16px;
+            position: relative;
+        }
+        .upload-area:hover,
+        .upload-area.dragover {
+            border-color: #667eea;
+            background: #f0f2ff;
+        }
+        .upload-area input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+        .upload-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        .upload-area h3 {
+            font-size: 0.95rem;
+            color: #444;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .upload-area p {
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+        #file-name {
+            margin-top: 10px;
+            font-size: 0.82rem;
+            color: #667eea;
+            font-weight: 600;
+            min-height: 18px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 0.97rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            text-decoration: none;
+            text-align: center;
+        }
+        .btn:active { transform: scale(0.98); }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+        }
+        .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(102,126,234,0.55);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: white;
+            border: 2px solid #e8eaf6;
+            color: #667eea;
+            margin-top: 12px;
+        }
+        .btn-outline:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0;
+            color: #ccc;
+            font-size: 0.82rem;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #eee;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #f0f2ff;
+            color: #667eea;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        /* Loading state */
+        .btn-primary.loading {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="logo">📝</div>
+
+    <div class="badge">
+        <span>✦</span> AI Powered
+    </div>
+
+    <h1>AI Notes Generator</h1>
+    <p class="subtitle">Upload a PDF or paste your text to instantly<br>generate smart summaries and key points.</p>
+
+    <form action="/upload" method="POST" enctype="multipart/form-data"
+          onsubmit="handleSubmit(this)">
+
+        <div class="upload-area"
+             ondragover="this.classList.add('dragover')"
+             ondragleave="this.classList.remove('dragover')"
+             ondrop="this.classList.remove('dragover')">
+
+            <input type="file" name="pdf_file" accept=".pdf"
+                   required onchange="showFile(this)">
+
+            <div class="upload-icon">📄</div>
+            <h3>Drop your PDF here</h3>
+            <p>or click to browse files</p>
+            <p id="file-name"></p>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="submit-btn">
+            Generate Notes
+        </button>
+
+    </form>
+
+    <div class="divider">or</div>
+
+    <a href="/paste" class="btn btn-outline">
+        ✏️ &nbsp; Paste Text Instead
+    </a>
+</div>
+
+<script>
+    function showFile(input) {
+        const name = input.files[0]?.name || '';
+        const el   = document.getElementById('file-name');
+        el.textContent = name ? '✓ ' + name : '';
+    }
+
+    function handleSubmit(form) {
+        const btn = document.getElementById('submit-btn');
+        btn.textContent = 'Generating...';
+        btn.classList.add('loading');
+    }
+</script>
+
+</body>
+</html>

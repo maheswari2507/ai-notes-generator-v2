@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paste Text — AI Notes Generator</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 680px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+        }
+
+        .back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            color: #667eea;
+            font-size: 0.88rem;
+            font-weight: 600;
+            transition: gap 0.2s;
+        }
+        .back:hover { gap: 10px; }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #f0f2ff;
+            color: #667eea;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            color: #1a1a2e;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+        }
+
+        /* Textarea wrapper */
+        .textarea-wrap {
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 300px;
+            border: 2px solid #e8eaf6;
+            border-radius: 14px;
+            padding: 18px;
+            font-size: 0.95rem;
+            font-family: 'Segoe UI', sans-serif;
+            line-height: 1.7;
+            resize: vertical;
+            outline: none;
+            color: #333;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: #fafbff;
+        }
+        textarea:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102,126,234,0.1);
+            background: white;
+        }
+        textarea::placeholder { color: #bbb; }
+
+        /* Clear button inside textarea */
+        .clear-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #f0f2ff;
+            border: none;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            color: #667eea;
+            cursor: pointer;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .clear-btn.visible { opacity: 1; }
+        .clear-btn:hover { background: #e8eaff; }
+
+        /* Stats bar */
+        .stats {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding: 0 4px;
+        }
+        .stat {
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+        .stat span {
+            color: #667eea;
+            font-weight: 700;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-size: 0.97rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .btn:active { transform: scale(0.98); }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+        }
+        .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(102,126,234,0.55);
+            transform: translateY(-1px);
+        }
+        .btn-primary:disabled {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        /* Tips */
+        .tips {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .tip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.78rem;
+            color: #aaa;
+        }
+        .tip-icon {
+            width: 20px;
+            height: 20px;
+            background: #f0f2ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+
+    <div class="topbar">
+        <a href="/" class="back">← Back</a>
+        <div class="badge">✦ AI Powered</div>
+    </div>
+
+    <h1>Paste Your Text</h1>
+    <p class="subtitle">Paste any article, notes, or document below to generate a smart summary.</p>
+
+    <form action="/summarize" method="POST" onsubmit="handleSubmit(this)">
+
+        <div class="textarea-wrap">
+            <textarea
+                name="user_text"
+                id="main-textarea"
+                placeholder="Paste your text here... (minimum 50 words recommended)"
+                oninput="updateStats(this)"
+                required>
+            </textarea>
+            <button type="button" class="clear-btn" id="clear-btn" onclick="clearText()">
+                ✕ Clear
+            </button>
+        </div>
+
+        <div class="stats">
+            <div class="stat">Words: <span id="word-count">0</span></div>
+            <div class="stat">Characters: <span id="char-count">0</span></div>
+            <div class="stat">Est. pages: <span id="page-count">0</span></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="submit-btn">
+            ✦ &nbsp; Generate Notes
+        </button>
+
+    </form>
+
+    <div class="tips">
+        <div class="tip">
+            <div class="tip-icon">💡</div>
+            Works best with 200+ words
+        </div>
+        <div class="tip">
+            <div class="tip-icon">📄</div>
+            Supports any topic or subject
+        </div>
+        <div class="tip">
+            <div class="tip-icon">⚡</div>
+            Results in under 30 seconds
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function updateStats(el) {
+        const text  = el.value.trim();
+        const words = text ? text.split(/\s+/).filter(Boolean).length : 0;
+        const chars = el.value.length;
+        const pages = Math.max(0, (words / 250).toFixed(1));
+
+        document.getElementById('word-count').textContent  = words;
+        document.getElementById('char-count').textContent  = chars;
+        document.getElementById('page-count').textContent  = pages;
+
+        const clearBtn = document.getElementById('clear-btn');
+        clearBtn.classList.toggle('visible', chars > 0);
+    }
+
+    function clearText() {
+        const ta = document.getElementById('main-textarea');
+        ta.value = '';
+        updateStats(ta);
+        ta.focus();
+    }
+
+    function handleSubmit(form) {
+        const btn = document.getElementById('submit-btn');
+        btn.textContent = '⏳  Generating...';
+        btn.disabled = true;
+    }
+</script>
+
+</body>
+</html>
