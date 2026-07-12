@@ -3,7 +3,11 @@ import math
 from transformers import pipeline
 
 print("Loading models...")
-summarizer = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
+summarizer = pipeline(
+    task="summarization",
+    model="sshleifer/distilbart-cnn-12-6",
+    framework="pt"
+)
 
 # ─────────────────────────────────────────────
 #  Constants
