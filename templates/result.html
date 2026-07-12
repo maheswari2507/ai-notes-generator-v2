@@ -3,98 +3,186 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generated Notes</title>
+    <title>Generated Notes — AI Notes Generator</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #f4f6fb;
-            padding: 32px 16px;
-            color: #222;
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-        .container { max-width: 820px; margin: 0 auto; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #EEF2FF;
+            min-height: 100vh;
+            padding: 36px 16px 60px;
+            color: #1e293b;
+        }
 
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        /* ── Top bar ── */
         .topbar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 28px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            gap: 12px;
         }
-        .topbar h1 { font-size: 1.5rem; color: #1a1a2e; }
-        .back {
-            text-decoration: none;
-            color: #5c6bc0;
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
-        .back:hover { text-decoration: underline; }
 
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo-dot {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .topbar h1 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #1e3a8a;
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: #3B82F6;
+            font-size: 0.88rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 7px 14px;
+            border-radius: 8px;
+            border: 1.5px solid #BFDBFE;
+            background: white;
+            transition: all 0.18s;
+        }
+
+        .back-link:hover {
+            background: #EFF6FF;
+            border-color: #3B82F6;
+            color: #1D4ED8;
+        }
+
+        /* ── Cards ── */
         .card {
             background: white;
-            border-radius: 14px;
+            border-radius: 16px;
             padding: 28px 32px;
-            box-shadow: 0 2px 16px rgba(0,0,0,0.07);
-            margin-bottom: 24px;
+            box-shadow: 0 2px 20px rgba(59, 130, 246, 0.07);
+            margin-bottom: 22px;
+            border: 1px solid #E0E7FF;
         }
 
-        .card-label {
-            font-size: 0.72rem;
-            font-weight: 700;
-            letter-spacing: 0.1em;
+        .section-label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
             text-transform: uppercase;
-            color: #5c6bc0;
-            margin-bottom: 14px;
+            color: #3B82F6;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .overall-summary {
-            border-left: 4px solid #5c6bc0;
-            background: #f8f9ff;
+        .section-label::after {
+            content: '';
+            flex: 1;
+            height: 1.5px;
+            background: #E0E7FF;
+            border-radius: 2px;
         }
-        .overall-summary p {
+
+        /* ── Summary ── */
+        .summary-card {
+            border-left: 5px solid #3B82F6;
+            background: linear-gradient(to right, #EFF6FF, white 60%);
+        }
+
+        .summary-card p {
             font-size: 1rem;
-            line-height: 1.8;
-            color: #333;
+            line-height: 1.85;
+            color: #334155;
+        }
+
+        /* ── Detailed Notes ── */
+        .para-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
         .para-card {
-            background: white;
             border-radius: 10px;
             padding: 16px 20px;
-            box-shadow: 0 1px 8px rgba(0,0,0,0.06);
-            margin-bottom: 12px;
-            border-left: 3px solid #c5cae9;
-        }
-        .para-card p {
-            font-size: 0.93rem;
-            line-height: 1.75;
-            color: #444;
-        }
-        .para-num {
-            font-size: 0.72rem;
-            font-weight: 700;
-            color: #9fa8da;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
+            background: #F8FAFF;
+            border: 1px solid #E0E7FF;
+            border-left: 3px solid #93C5FD;
+            transition: border-color 0.18s;
         }
 
-        .key-points-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 12px;
+        .para-card:hover {
+            border-left-color: #3B82F6;
         }
+
+        .para-num {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: #93C5FD;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 7px;
+        }
+
+        .para-card p {
+            font-size: 0.93rem;
+            line-height: 1.8;
+            color: #475569;
+        }
+
+        /* ── Key Concepts ── */
+        .kp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 11px;
+        }
+
         .kp-item {
             display: flex;
-            gap: 12px;
             align-items: flex-start;
-            background: #f8f9ff;
+            gap: 12px;
+            background: #F0F4FF;
             border-radius: 10px;
-            padding: 14px 16px;
+            padding: 13px 16px;
+            border: 1px solid #E0E7FF;
+            transition: background 0.15s, transform 0.15s;
         }
-        .kp-num {
-            background: #5c6bc0;
+
+        .kp-item:hover {
+            background: #E8EEFF;
+            transform: translateY(-1px);
+        }
+
+        .kp-badge {
+            background: linear-gradient(135deg, #3B82F6, #1D4ED8);
             color: white;
             border-radius: 50%;
             width: 26px;
@@ -102,104 +190,151 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             font-weight: 700;
             flex-shrink: 0;
-            margin-top: 2px;
-        }
-        .kp-text {
-            font-size: 0.9rem;
-            line-height: 1.6;
-            color: #333;
+            margin-top: 1px;
         }
 
+        .kp-text {
+            font-size: 0.9rem;
+            line-height: 1.65;
+            color: #334155;
+        }
+
+        /* ── Actions ── */
         .actions {
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
-            margin-top: 8px;
-            margin-bottom: 40px;
+            margin-top: 4px;
+            margin-bottom: 16px;
         }
+
         .btn {
-            padding: 10px 24px;
-            border-radius: 8px;
+            padding: 11px 26px;
+            border-radius: 9px;
             font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
             border: none;
-            transition: background 0.2s;
+            transition: all 0.18s;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 7px;
+            line-height: 1;
         }
-        .btn-primary { background: #5c6bc0; color: white; }
-        .btn-primary:hover { background: #3f51b5; }
-        .btn-outline {
-            background: white;
-            border: 2px solid #5c6bc0;
-            color: #5c6bc0;
-        }
-        .btn-outline:hover { background: #f0f2ff; }
-        .btn-green {
-            background: #2e7d32;
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3B82F6, #1D4ED8);
             color: white;
+            box-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
         }
-        .btn-green:hover { background: #1b5e20; }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2563EB, #1e40af);
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn-green {
+            background: linear-gradient(135deg, #16A34A, #15803D);
+            color: white;
+            box-shadow: 0 2px 10px rgba(22, 163, 74, 0.28);
+        }
+
+        .btn-green:hover {
+            background: linear-gradient(135deg, #15803D, #166534);
+            box-shadow: 0 4px 14px rgba(22, 163, 74, 0.38);
+            transform: translateY(-1px);
+        }
+
         .btn-green.loading {
-            opacity: 0.7;
+            opacity: 0.65;
             pointer-events: none;
+            transform: none;
+        }
+
+        /* ── Empty state ── */
+        .empty-state {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            font-style: italic;
+            padding: 8px 0;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 600px) {
+            .card {
+                padding: 20px 18px;
+            }
+
+            .kp-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar h1 {
+                font-size: 1.1rem;
+            }
+
+            .btn {
+                padding: 10px 18px;
+                font-size: 0.85rem;
+            }
         }
 
         @media print {
-            .topbar, .actions { display: none !important; }
             body { background: white !important; padding: 0 !important; }
+            .topbar, .actions { display: none !important; }
             .container { max-width: 100% !important; }
-            .card, .para-card {
-                box-shadow: none !important;
-                border-radius: 0 !important;
-                page-break-inside: avoid;
-            }
+            .card, .para-card { box-shadow: none !important; border-radius: 0 !important; }
             .kp-item { page-break-inside: avoid; }
-            .key-points-grid { grid-template-columns: 1fr !important; }
+            .kp-grid { grid-template-columns: 1fr 1fr !important; }
         }
     </style>
 </head>
 <body>
 <div class="container">
 
+    <!-- Top bar -->
     <div class="topbar">
-        <h1>Generated Notes</h1>
-        <a href="/" class="back">← New Document</a>
+        <div class="topbar-left">
+            <div class="logo-dot">AI</div>
+            <h1>Generated Notes</h1>
+        </div>
+        <a href="/" class="back-link">← New Document</a>
     </div>
 
     <!-- Summary -->
-    <div class="card overall-summary">
-        <div class="card-label">Summary</div>
-        <p>{{ overall_summary }}</p>
+    <div class="card summary-card">
+        <div class="section-label">Summary</div>
+        <p>{{ overall_summary if overall_summary else "No summary available." }}</p>
     </div>
 
-    <!-- Detailed paragraphs -->
+    <!-- Detailed Notes -->
     {% if paragraphs %}
     <div class="card">
-        <div class="card-label">Detailed Notes</div>
-        {% for para in paragraphs %}
-        <div class="para-card">
-            <div class="para-num">¶ {{ loop.index }}</div>
-            <p>{{ para }}</p>
+        <div class="section-label">Detailed Notes</div>
+        <div class="para-list">
+            {% for para in paragraphs %}
+            <div class="para-card">
+                <div class="para-num">¶ Paragraph {{ loop.index }}</div>
+                <p>{{ para }}</p>
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
     {% endif %}
 
-    <!-- Key points -->
+    <!-- Key Concepts -->
     {% if key_points %}
     <div class="card">
-        <div class="card-label">Key Points</div>
-        <div class="key-points-grid">
+        <div class="section-label">Key Concepts</div>
+        <div class="kp-grid">
             {% for point in key_points %}
             <div class="kp-item">
-                <div class="kp-num">{{ loop.index }}</div>
+                <div class="kp-badge">{{ loop.index }}</div>
                 <div class="kp-text">{{ point }}</div>
             </div>
             {% endfor %}
@@ -212,7 +347,6 @@
 
         <a href="/" class="btn btn-primary">⊕ New Document</a>
 
-
         <form action="/download-pdf" method="POST" style="display:inline;"
               onsubmit="handleDownload(this)">
             <input type="hidden" name="overall_summary" value="{{ overall_summary }}">
@@ -223,7 +357,7 @@
                 <input type="hidden" name="key_points" value="{{ point }}">
             {% endfor %}
             <button type="submit" class="btn btn-green" id="dl-btn">
-                ⬇️ Download PDF
+                ⬇ Download PDF
             </button>
         </form>
 
@@ -234,12 +368,12 @@
 <script>
     function handleDownload(form) {
         const btn = document.getElementById('dl-btn');
-        btn.textContent = '⏳ Generating...';
+        btn.textContent = '⏳ Generating PDF...';
         btn.classList.add('loading');
         setTimeout(() => {
-            btn.textContent = '⬇️ Download PDF';
+            btn.textContent = '⬇ Download PDF';
             btn.classList.remove('loading');
-        }, 6000);
+        }, 7000);
     }
 </script>
 

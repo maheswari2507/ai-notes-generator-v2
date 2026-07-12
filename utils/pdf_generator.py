@@ -120,7 +120,7 @@ def generate_pdf(overall_summary, paragraphs, key_points):
 
     story.append(
         Paragraph(
-            "Key Concepts",
+            "Key Points",
             heading_style
         )
     )
