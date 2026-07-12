@@ -1,10 +1,17 @@
 import re
+import nltk
 from collections import Counter
 from nltk.corpus import stopwords
 from nltk.tokenize import sent_tokenize, word_tokenize
 
-STOP_WORDS = set(stopwords.words("english"))
+# Automatically download required NLTK resources
+for resource in ["punkt", "stopwords"]:
+    try:
+        nltk.data.find(resource)
+    except LookupError:
+        nltk.download(resource)
 
+STOP_WORDS = set(stopwords.words("english"))
 
 def _clean(text):
     text = re.sub(r"\(cid:\d+\)", " ", text)
